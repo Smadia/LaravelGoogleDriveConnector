@@ -1,6 +1,6 @@
 <?php
 
-namespace Smadia\GoogleDriveLaravel;
+namespace Smadia\LaravelGoogleDrive;
 
 use Illuminate\Support\Facades\Storage;
 
