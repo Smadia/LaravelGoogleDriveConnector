@@ -4,8 +4,8 @@
     "type": "library",
     "license": "GNU",
     "require": {
-        "php": ">=5.6.*",
-        "laravel/framework": ">=5.0.*",
+        "php": ">=5.6.0",
+        "laravel/framework": ">=5.2",
         "nao-pon/flysystem-google-drive": "~1.1"
     },
     "autoload": {
