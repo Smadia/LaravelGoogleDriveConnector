@@ -4,7 +4,7 @@ namespace Smadia\LaravelGoogleDrive\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
-class GoogleDriveLaravel extends Facade {
+class LaravelGoogleDrive extends Facade {
 
     public static function getFacadeAccessor()
     {
