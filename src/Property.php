@@ -100,17 +100,20 @@ trait Property {
         $file = $file->where('path', '=', $this->path)
                     ->first();
 
-        $this->namex = $file['filename'] . '.' . $file['extension'];
-        $this->name = $file['filename'];
-        $this->extension = $file['extension'];
-        $this->size = $file['size'];
-        $this->timestamp = $file['timestamp'];
-        $this->dirname = $file['dirname'];
-        $this->basename = $file['basename'];
-        $this->type = $file['type'];
+        if(!is_null($file)) {
+            $this->exist = true;
+            $this->namex = $file['filename'] . '.' . $file['extension'];
+            $this->name = $file['filename'];
+            $this->extension = $file['extension'];
+            $this->size = $file['size'];
+            $this->timestamp = $file['timestamp'];
+            $this->dirname = $file['dirname'];
+            $this->basename = $file['basename'];
+            $this->type = $file['type'];
 
-        if($this->type === 'file') {
-            $this->mime = $file['mimetype'];
+            if($this->type === 'file') {
+                $this->mimetype = $file['mimetype'];
+            }
         }
     }
 
@@ -127,6 +130,10 @@ trait Property {
 
             if($property === 'path') {
                 $this->defineProperties();
+
+                if($this->type === 'file') {
+                    $this->contents = Storage::cloud()->get($this->path);
+                }
             }
         }
     }
@@ -156,7 +163,13 @@ trait Property {
      */
     public function getAllProperties()
     {
+        $properties = [];
 
+        foreach($this->allowedPropertyToGet as $property) {
+            $properties[$property] = $this->{$property};
+        }
+
+        return $properties;
     }
 
 }
