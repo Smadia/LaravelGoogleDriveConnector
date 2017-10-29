@@ -26,7 +26,7 @@ Register ServiceProvider in <code>config/app.php</code>
 <pre>
 'providers' => [
     .....
-    Smadia\LaravelGoogleDrive\Provider\LaravelGoogleDriveServiceProvider::class
+    Smadia\LaravelGoogleDrive\Providers\LaravelGoogleDriveServiceProvider::class
     .....
 ]
 </pre>
