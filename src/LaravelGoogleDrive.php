@@ -3,6 +3,7 @@
 namespace Smadia\LaravelGoogleDrive;
 
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\UploadedFile;
 use Smadia\LaravelGoogleDrive\Handlers\DirectoryHandler;
 use Smadia\LaravelGoogleDrive\Handlers\FileHandler;
 
@@ -25,6 +26,7 @@ class LaravelGoogleDrive {
      * Make a new directory
      *
      * @param string $dirname
+     * 
      * @return DirectoryHandler
      */
     public function mkdir($dirname)
@@ -39,6 +41,7 @@ class LaravelGoogleDrive {
      *
      * @param string $dirname
      * @param int $index
+     * 
      * @return void
      */
     public function dir($dirname, $index = 0)
@@ -49,23 +52,29 @@ class LaravelGoogleDrive {
     /**
      * Create a new file
      *
-     * @param string $nameWithExtension
-     * @param string $fileContents
-     * @return void
+     * @param UploadedFile|string $nameWithExtension
+     * @param string|null $fileContents
+     * 
+     * @return FileHandler|null
      */
-    public function put($nameWithExtension, $fileContents)
+    public function put($nameWithExtension, $fileContents = null)
     {
-        $file = new FileHandler(
-            $nameWithExtension, $fileContents
-        );
+        if($nameWithExtension instanceof UploadedFile) {
+            $file = $nameWithExtension;
+        } else {
+            $file = new FileHandler(
+                $nameWithExtension, $fileContents
+            );
+        }
 
-        $this->directoryHandler->put($file);
+        return $this->directoryHandler->put($file);
     }
 
     /**
      * Get the list contents of root directory
      *
      * @param mixed $filter
+     * 
      * @return void
      */
     public function ls($filter = null)
@@ -78,6 +87,7 @@ class LaravelGoogleDrive {
      *
      * @param string $fileName
      * @param mixed $filter
+     * 
      * @return void
      */
     public function file($fileName, $extension, $index = 0)
