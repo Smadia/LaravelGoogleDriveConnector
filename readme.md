@@ -37,7 +37,7 @@ You can create your own Facade and ServiceProvider manually, and then register i
 Configuration
 =============
 
-Before use, make sure you have add new disk in <code>config/filesystem.php</code>
+Before using package, make sure you have added new disk in <code>config/filesystem.php</code>
 
 <pre>
 'disks' => [
@@ -73,6 +73,44 @@ How do I get the Google Drive API ? Follow these links :
 - [Getting your Root Folder ID](https://github.com/ivanvermeyen/laravel-google-drive-demo/blob/master/README/3-getting-your-root-folder-id.md)
 
 ## Usage
+
+### Usage in non-object file
+
+You can use LGD Facade in non-object file, such as routes/web.php, blade file. Below is the example usage in non-object file
+
+<pre>
+LGD::dir('mydir')->ls()->toObject();
+</pre>
+
+If you are using the Facade in object context, you should use the Facade in <code>Smadia\LaravelGoogleDrive\Facades\LaravelGoogleDrive</code> after the <code>namespace</code> declaration like below
+
+<pre>
+&lt;?php
+
+namespace App\User;
+
+// other use declaration
+use Smadia\LaravelGoogleDrive\Facades\LaravelGoogleDrive;
+// other use declaration
+</pre>
+
+After that, you can use LaravelGoogleDrive facade instead than LGD like below
+
+<pre>
+LaravelGoogleDrive::ls()->toArray()
+</pre>
+
+To use it only with LGD keyword, you can use <code>as</code> in use declaration like code below
+
+<pre>
+&lt;?php
+
+namespace App\User;
+
+// other use declaration
+use Smadia\LaravelGoogleDrive\Facades\LaravelGoogleDrive as LGD;
+// other use declaration
+</pre>
 
 ### Get list contents from your root directory
 <pre>
@@ -124,8 +162,28 @@ To filter the list contents of directory, you can use filter() method
 
 <pre>
     LGD::ls(function($ls) {
-        return $ls->where('type', '=', 'dir');
+        return $ls->where('type', '=', 'dir'); // another option of 'type' is 'file'
     })->toArray();
+</pre>
+
+### File Storing
+
+These are some example to store file in Google Drive
+
+<pre>
+LGD::put('hello.txt', 'Hello World !');
+</pre>
+
+If you want store the uploaded file in your controller, you can use this one
+
+<pre>
+LGD::put('hello.txt', file_get_contents($request->file('file')->getRealPath()));
+</pre>
+
+If you want the name is same with the orginal uploaded file, you can assign the <code>$request->file()</code> as parameter
+
+<pre>
+LGD::put($request->file('file'));
 </pre>
 
 Directory methods
