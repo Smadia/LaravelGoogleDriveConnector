@@ -1,5 +1,5 @@
 # Laravel Google Drive Connector
-0.0.1
+0.0.2
 
 Installation
 ======
@@ -159,7 +159,7 @@ Below is optional method to your directory
         <tr>
             <td><code>put($filename, $contents = null)</code></td>
             <td>Put a new file to the current directory</td>
-            <td>$contents can be null if the $filename is instance of FileHandler class. This method will return the FileHandler class of the created file</td>
+            <td>$contents can be null if the $filename is instance of FileHandler class. This method will return the FileHandler class of the created file. $filename can assign with UploadedFile class ($request->file() in Laravel)</td>
         </tr>
         <tr>
             <td><code>file($filename, $extension, $index = 0)</code></td>
@@ -221,6 +221,16 @@ File Methods
             <td>Get the directory where the file is located</td>
             <td>This method will return the DirectoryHandler class</td>
         </tr>
+        <tr>
+            <td><code>show()</code></td>
+            <td>Show the file in browser. Only work for jpeg, jpg, png, gif, and svg file extension</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td><code>download()</code></td>
+            <td>Give a download response</td>
+            <td>-</td>
+        </tr>
     </tbody>
 </table>
 
@@ -265,6 +275,11 @@ List Content Methods
             <td><code>filter($filter)</code></td>
             <td>Get the directory where the file is located</td>
             <td>This method will return the DirectoryHandler class. $filter is a closure which return the $filter itself</td>
+        </tr>
+        <tr>
+            <td><code>getAllProperties()</code></td>
+            <td>Get all properties of a file or directory</td>
+            <td>This method will return all properties in array</td>
         </tr>
     </tbody>
 </table>
