@@ -1,4 +1,5 @@
 # Laravel Google Drive Connector
+0.0.1
 
 Installation
 ======
@@ -100,7 +101,7 @@ LGD::dir('mydir')->file('youfile', 'txt')->name
 ### You can add index to get the file (if you have two or more files with the same name)
 
 <pre>
-LGD::dir('mydir')->file('youfile', 'txt', 2)->name
+LGD::dir('mydir')->file('yourfile', 'txt', 2)->name
 </pre>
 
 ### Get other file's properties
@@ -116,6 +117,16 @@ Below is the list of file's property which you can get by adding <code>->(proper
 - timestamp
 - mimetype (only for file type)
 - type
+
+### Filter
+
+To filter the list contents of directory, you can use filter() method
+
+<pre>
+    LGD::ls(function($ls) {
+        return $ls->where('type', '=', 'dir');
+    })->toArray();
+</pre>
 
 Directory methods
 =====
