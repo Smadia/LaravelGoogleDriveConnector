@@ -3,8 +3,8 @@
 namespace Smadia\LaravelGoogleDrive;
 
 use Illuminate\Support\Facades\Storage;
-use Smadia\LaravelGoogleDrive\Handler\DirectoryHandler;
-use Smadia\LaravelGoogleDrive\Handler\FileHandler;
+use Smadia\LaravelGoogleDrive\Handlers\DirectoryHandler;
+use Smadia\LaravelGoogleDrive\Handlers\FileHandler;
 
 class LaravelGoogleDrive {
 
