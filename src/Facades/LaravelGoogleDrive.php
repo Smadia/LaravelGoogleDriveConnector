@@ -8,7 +8,7 @@ class LaravelGoogleDrive extends Facade {
 
     public static function getFacadeAccessor()
     {
-        return 'GDL';
+        return 'LGD';
     }
 
 }

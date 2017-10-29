@@ -3,8 +3,8 @@
 namespace Smadia\LaravelGoogleDrive;
 
 use Illuminate\Support\Facades\Storage;
-use Smadia\LaravelGoogleDrive\Handler\DirectoryHandler;
-use Smadia\LaravelGoogleDrive\Handler\FileHandler;
+use Smadia\LaravelGoogleDrive\Handlers\DirectoryHandler;
+use Smadia\LaravelGoogleDrive\Handlers\FileHandler;
 
 class ListContent {
 
@@ -12,7 +12,7 @@ class ListContent {
 
     private $listContents;
 
-    private $filter;
+    private $filter = null;
 
     private $recursive = false;
 
@@ -23,29 +23,51 @@ class ListContent {
         $this->generateListContents();
     }
 
-    public function filter($filter = null)
-    {
-        $this->filter = $filter;
-
-        return $this;
-    }
-
+    /**
+     * Generate the list contents of current path
+     *
+     * @return void
+     */
     private function generateListContents()
     {
         // If the directory is exists, then, get all subdirectories and files
         $ls = collect(Storage::cloud()->listContents($this->path, $this->recursive));
-
+        
         if(is_callable($this->filter)) {
-            $ls = $this->filter($ls);
+            $ls = ($this->filter)($ls);
         }
-
+        
         $this->listContents = $ls;
     }
+    
+    /**
+     * Filters the list content
+     *
+     * @param mixed $filter
+     * 
+     * @return void
+     */
+    public function filter($filter)
+    {
+        $this->filter = $filter;
 
-    public function dir($name, $index = 0)
+        $this->generateListContents();
+
+        return $this;
+    }
+
+    /**
+     * Get specific deirectory
+     *
+     * @param string $dirname
+     * @param int $index
+     * 
+     * @return FileHandler
+     */
+    public function dir($dirname, $index = 0)
     {
         $dirs = $this->listContents->where('type', '=', 'dir')
-                    ->where('filename', '=', $name);
+                    ->where('filename', '=', $dirname);
 
         if($index >= $dirs->count())
             die('No such directory !');
@@ -58,6 +80,15 @@ class ListContent {
         return $fileHandler;
     }
 
+    /**
+     * Get the spesific file in list contents
+     *
+     * @param string $filename
+     * @param string $extension
+     * @param int $index
+     * 
+     * @return void
+     */
     public function file($filename, $extension, $index = 0)
     {
         $file = $this->listContents->where('type', '=', 'file')
@@ -75,16 +106,31 @@ class ListContent {
         return $fileHandler;
     }
     
+    /**
+     * Return list contents as an array
+     *
+     * @return array
+     */
     public function toArray()
     {
         return $this->listContents->toArray();
     }
 
+    /**
+     * Return list contents as Laravel's collection
+     *
+     * @return Illuminate\Database\Eloquent\Collection
+     */
     public function toCollect()
     {
         return $this->listContents;
     }
 
+    /**
+     * Return list contents as an array with object as it's member
+     *
+     * @return array
+     */
     public function toObject()
     {
         $collect = [];

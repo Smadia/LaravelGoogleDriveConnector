@@ -1,9 +1,9 @@
 <?php
 
-namespace Smadia\LaravelGoogleDrive\Handler;
+namespace Smadia\LaravelGoogleDrive\Handlers;
 
 use Illuminate\Support\Facades\Storage;
-use Smadia\LaravelGoogleDrive\Handler\FileHandler;
+use Smadia\LaravelGoogleDrive\Handlers\FileHandler;
 use Smadia\LaravelGoogleDrive\Action;
 use Smadia\LaravelGoogleDrive\Property;
 use Smadia\LaravelGoogleDrive\ListContent;
@@ -29,7 +29,7 @@ class DirectoryHandler implements Action {
         
         $this->generateDirectoryPath();
 
-        if($this->isExists())
+        if($this->isExist())
             $this->listContents = new ListContent($this->path);
     }
 
@@ -74,7 +74,12 @@ class DirectoryHandler implements Action {
         $this->defineProperties();
     }
 
-    private function generateExists()
+    /**
+     * Generate whether the directory is exist
+     *
+     * @return void
+     */
+    private function generateExist()
     {
         $ls = collect(Storage::cloud()->listContents('/', false));
         $dir = $ls->where('type', '=', 'dir');
@@ -82,25 +87,64 @@ class DirectoryHandler implements Action {
         $this->exists = $dir->count() > 0;
     }
 
+    /**
+     * Put a new file to current directory
+     *
+     * @param string|FileHandler $filename
+     * @param string|null $contents
+     * 
+     * @return void
+     */
     public function put($filename, $contents = null)
     {
-        if($this->isExists()) {
+        if($this->isExist()) {
             if(is_string($filename)) {
+                // If the $filename is a string, then create a new file with
+                // $filename as it's filename
                 $this->putAsFile($filename, $contents);
             }
             else {
+                // If the $filename is a FileHandler instance, then create a new
+                // file based on the FileHandler instance
                 $this->putAsFileHandler($filename);
             }
         }
     }
 
+    /**
+     * Put a new file base on the FileHandler class
+     *
+     * @param FileHandler $file
+     * 
+     * @return void
+     */
     private function putAsFileHandler(FileHandler $file)
     {
         Storage::cloud()->put(
-            $this->path . '/' . $file->namex(), $file->getContents()
+            $this->path . '/' . $file->namex, $file->contents
         );
+
+        $file = $this->ls(function($filter) use ($file) {
+                    $filter->where('name', '=', $file->name)
+                            ->where('extension', '=', $file->extension);
+
+                    return $filter;
+                });
+
+        $fileHandler = new FileHandler();
+        $fileHandler->path = $file->first()['path'];
+
+        return $fileHandler;
     }
 
+    /**
+     * Put a new file base on the requested filename and contents
+     *
+     * @param string $filename
+     * @param string|int $contents
+     * 
+     * @return void
+     */
     private function putAsFile($filename, $contents)
     {
         Storage::cloud()->put(
@@ -108,23 +152,52 @@ class DirectoryHandler implements Action {
         );
     }
 
-    public function isExists()
+    /**
+     * Check whether the directory is exists
+     *
+     * @return boolean
+     */
+    public function isExist()
     {
         return $this->exists;
     }
 
+    /**
+     * Rename the current directory
+     *
+     * @param string $newname
+     * 
+     * @return void
+     */
     public function rename($newname)
     {
-        if($this->isExists())
+        if($this->isExist())
             Storage::cloud()->move($this->path, $this->dirname . '/' . $newname);
     }
 
+    /**
+     * Delete the directory
+     *
+     * @return boolean
+     */
     public function delete()
     {
-        if($this->isExists())
+        if($this->isExist()) {
             Storage::cloud()->deleteDirectory($this->path);
+            return true;
+        }
+
+        return false;
     }
 
+    /**
+     * Go to spesific directory inside the current directory
+     *
+     * @param string $dirname
+     * @param int $index
+     * 
+     * @return void
+     */
     public function dir($dirname, $index = 0)
     {
         $directory = $this->listContents->dir($dirname, $index);
@@ -135,22 +208,39 @@ class DirectoryHandler implements Action {
     /**
      * Get the list content of requested directory
      *
-     * @param boolean $filter
+     * @param mixed $filter
+     * 
      * @return Smadia\LaravelGoogleDrive\ListContent|null
      */
     public function ls($filter = null)
     {
-        if($this->isExists())
+        if($this->isExist())
             return $this->listContents->filter($filter);
 
         return null;
     }
 
+    /**
+     * Get a spesific file
+     *
+     * @param string $filename
+     * @param string $extension
+     * @param int $index
+     * 
+     * @return void
+     */
     public function file($filename, $extension, $index = 0)
     {
         return $this->listContents->file($filename, $extension, $index);
     }
 
+    /**
+     * Make a new directory inside the current directory
+     *
+     * @param string $dirname
+     * 
+     * @return void
+     */
     public function mkdir($dirname)
     {
         $name = $this->path . '/' . $dirname;
@@ -160,6 +250,19 @@ class DirectoryHandler implements Action {
         $directory->path = $name;
 
         return $directory;
+    }
+
+    /**
+     * Get the parent directory of current directory
+     *
+     * @return void
+     */
+    public function parent()
+    {
+        $directoryHandler = new DirectoryHandler();
+        $directoryHandler->path = $this->dirname;
+
+        return $directoryHandler;
     }
 
 }

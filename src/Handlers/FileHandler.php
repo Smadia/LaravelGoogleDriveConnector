@@ -1,9 +1,9 @@
 <?php
 
-namespace Smadia\LaravelGoogleDrive\Handler;
+namespace Smadia\LaravelGoogleDrive\Handlers;
 
 use Illuminate\Support\Facades\Storage;
-use Smadia\LaravelGoogleDrive\Handler\DirectoryHandler;
+use Smadia\LaravelGoogleDrive\Handlers\DirectoryHandler;
 use Smadia\LaravelGoogleDrive\Property;
 use Smadia\LaravelGoogleDrive\Action;
 
@@ -21,11 +21,21 @@ class FileHandler implements Action {
         }
     }
 
-    public function isExists()
+    /**
+     * Check whether the file exists
+     *
+     * @return boolean
+     */
+    public function isExist()
     {
         return $this->exists;
     }
 
+    /**
+     * Generate whether the file or directory is exists
+     *
+     * @return void
+     */
     private function generateExist()
     {
         $file = Storage::cloud()->get($this->filePath);
@@ -35,22 +45,39 @@ class FileHandler implements Action {
         }
     }
 
+    /**
+     * Rename current file
+     *
+     * @param string $newname
+     * @return void
+     */
     public function rename($newname)
     {
         Storage::cloud()->move($this->path, $this->dirname . '/' . $newname);
     }
 
+    /**
+     * Delete current file
+     *
+     * @return void
+     */
     public function delete()
     {
-        if($this->isExists())
+        if($this->isExist())
             Storage::cloud()->delete($this->filePath);
     }
 
+    /**
+     * Get the parent directory
+     *
+     * @return DirectoryHandler
+     */
     public function getDir()
     {
-        return new DirectoryHandler(
-            $this->dirname
-        );
+        $directoryHandler = new DirectoryHandler();
+        $directoryHandler->path = $this->dirname;
+
+        return $directoryHandler;
     }
 
 }
