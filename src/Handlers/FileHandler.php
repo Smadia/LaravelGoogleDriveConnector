@@ -11,7 +11,15 @@ class FileHandler implements Action {
 
     use Property;
 
-    private $exists = true;
+    private $showable = [
+        'jpeg',
+        'jpg',
+        'png',
+        'gif',
+        'svg'
+    ];
+
+    private $exist = false;
 
     public function __construct($nameWithExtension = null, $fileContents = null)
     {
@@ -28,7 +36,7 @@ class FileHandler implements Action {
      */
     public function isExist()
     {
-        return $this->exists;
+        return $this->exist;
     }
 
     /**
@@ -40,8 +48,8 @@ class FileHandler implements Action {
     {
         $file = Storage::cloud()->get($this->filePath);
 
-        if(is_null($file)) {
-            $this->exists = false;
+        if(!is_null($file)) {
+            $this->exist = true;
         }
     }
 
@@ -53,7 +61,8 @@ class FileHandler implements Action {
      */
     public function rename($newname)
     {
-        Storage::cloud()->move($this->path, $this->dirname . '/' . $newname);
+        if($this->isExist())
+            Storage::cloud()->move($this->path, $this->dirname . '/' . $newname);
     }
 
     /**
@@ -78,6 +87,39 @@ class FileHandler implements Action {
         $directoryHandler->path = $this->dirname;
 
         return $directoryHandler;
+    }
+
+    /**
+     * Show file to browser
+     * Limit to image only
+     *
+     * @return void
+     */
+    public function show()
+    {
+        if($this->isExist()) {
+            return response($this->contents, 200)
+                    ->header('Content-Type', $this->mimetype)
+                    ->header('Content-Length', strlen($this->contents));
+        }
+
+        return null;
+    }
+
+    /**
+     * Download the file
+     *
+     * @return void
+     */
+    public function download()
+    {
+        if($this->isExist()) {
+            if($this->isExist()) {
+                return response($this->contents, 200)
+                        ->header('Content-Type', $this->mimetype)
+                        ->header('Content-Disposition', 'attachment; filename="' . $this->namex);
+            }
+        }
     }
 
 }
