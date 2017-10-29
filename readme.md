@@ -1,5 +1,4 @@
 # Laravel Google Drive Connector
-0.0.3
 
 Installation
 ======
