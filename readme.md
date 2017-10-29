@@ -142,9 +142,9 @@ Below is optional method to your directory
     </thead>
     <tbody>
         <tr>
-            <td><code>ls()</code></td>
+            <td><code>ls($filter = null)</code></td>
             <td>Get the list contents of the current directory</td>
-            <td>This method will return the Smadia/GoogleDriveLaravel/ListContent Class</td>
+            <td>This method will return the Smadia/GoogleDriveLaravel/ListContent Class. $filter is a closure which return the $filter itself</td>
         </tr>
         <tr>
             <td><code>delete()</code></td>
