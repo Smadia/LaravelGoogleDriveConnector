@@ -1,6 +1,6 @@
 <?php
 
-namespace Smadia\LaravelGoogleDrive\Provider;
+namespace Smadia\LaravelGoogleDrive\Providers;
 
 use Google_Client;
 use Google_Service_Drive;
