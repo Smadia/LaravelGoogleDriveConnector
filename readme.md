@@ -45,7 +45,7 @@ Before using package, make sure you have added new disk in <code>config/filesyst
     // ...
 
     'googledrive' => [
-        'driver' => 'google',
+        'driver' => 'googledrive',
         'clientId' => env('GOOGLE_DRIVE_CLIENT_ID'),
         'clientSecret' => env('GOOGLE_DRIVE_CLIENT_SECRET'),
         'refreshToken' => env('GOOGLE_DRIVE_REFRESH_TOKEN'),
