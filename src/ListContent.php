@@ -45,7 +45,7 @@ class ListContent {
      *
      * @param mixed $filter
      * 
-     * @return void
+     * @return ListContent
      */
     public function filter($filter)
     {
@@ -62,7 +62,7 @@ class ListContent {
      * @param string $dirname
      * @param int $index
      * 
-     * @return FileHandler
+     * @return DirectoryHandler
      */
     public function dir($dirname, $index = 0)
     {
@@ -87,7 +87,7 @@ class ListContent {
      * @param string $extension
      * @param int $index
      * 
-     * @return void
+     * @return FileHandler
      */
     public function file($filename, $extension, $index = 0)
     {
