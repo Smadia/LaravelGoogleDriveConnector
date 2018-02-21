@@ -16,7 +16,7 @@ class DirectoryHandler implements Action {
     /**
      * List contents of current directory
      *
-     * @var Smadia\LaravelGoogleDrive\ListContent|null
+     * @var ListContent|null
      */
     private $listContents;
 
@@ -30,7 +30,7 @@ class DirectoryHandler implements Action {
         
         $this->generateDirectoryPath();
 
-        if ($this->isExist()) {
+        if ($this->exists()) {
             $this->listContents = new ListContent($this->path);
         }
     }
@@ -95,12 +95,12 @@ class DirectoryHandler implements Action {
      * @param string|FileHandler|UploadedFile $filename
      * @param FileHandler|null $contents
      *
-     * @return void
+     * @return FileHandler|null
      */
     public function put($filename, $contents = null)
     {
         $uploaded = false;
-        if ($this->isExist()) {
+        if ($this->exists()) {
             if (is_string($filename)) {
                 // If the $filename is a string, then create a new file with
                 // $filename as it's filename
@@ -180,7 +180,7 @@ class DirectoryHandler implements Action {
      *
      * @param string $fileNameWithExtension
      *
-     * @return void
+     * @return FileHandler
      */
     private function getFileHandlerRecentlyUploaded($fileNameWithExtension)
     {
@@ -208,7 +208,7 @@ class DirectoryHandler implements Action {
      *
      * @return boolean
      */
-    public function isExist()
+    public function exists()
     {
         return $this->exists;
     }
@@ -222,7 +222,7 @@ class DirectoryHandler implements Action {
      */
     public function rename($newname)
     {
-        if ($this->isExist()) {
+        if ($this->exists()) {
             Storage::cloud()->move($this->path, $this->dirname . '/' . $newname);
         }
     }
@@ -234,7 +234,7 @@ class DirectoryHandler implements Action {
      */
     public function delete()
     {
-        if ($this->isExist()) {
+        if ($this->exists()) {
             Storage::cloud()->deleteDirectory($this->path);
             return true;
         }
@@ -248,7 +248,7 @@ class DirectoryHandler implements Action {
      * @param string $dirname
      * @param int $index
      *
-     * @return void
+     * @return DirectoryHandler
      */
     public function dir($dirname, $index = 0)
     {
@@ -262,11 +262,11 @@ class DirectoryHandler implements Action {
      *
      * @param mixed $filter
      *
-     * @return Smadia\LaravelGoogleDrive\ListContent|null
+     * @return ListContent|null
      */
     public function ls($filter = null)
     {
-        if ($this->isExist()) {
+        if ($this->exists()) {
             return $this->listContents->filter($filter);
         }
 
@@ -280,10 +280,17 @@ class DirectoryHandler implements Action {
      * @param string $extension
      * @param int $index
      *
-     * @return void
+     * @return FileHandler
      */
-    public function file($filename, $extension, $index = 0)
+    public function file($filename, $extension = null, $index = 0)
     {
+        if(is_null($extension)) {
+            $tempfilename = substr($filename, 0, strrpos($filename, '.'));
+            $tempextension = substr($filename, strrpos($filename, '.') + 1, strlen($filename) - strrpos($filename, '.') - 1);
+
+            return $this->listContents->file($tempfilename, $tempextension, $index);
+        }
+
         return $this->listContents->file($filename, $extension, $index);
     }
 
@@ -292,7 +299,7 @@ class DirectoryHandler implements Action {
      *
      * @param string $dirname
      *
-     * @return void
+     * @return DirectoryHandler
      */
     public function mkdir($dirname)
     {
@@ -308,7 +315,7 @@ class DirectoryHandler implements Action {
     /**
      * Get the parent directory of current directory
      *
-     * @return void
+     * @return DirectoryHandler
      */
     public function parent()
     {
@@ -317,4 +324,5 @@ class DirectoryHandler implements Action {
 
         return $directoryHandler;
     }
+
 }
